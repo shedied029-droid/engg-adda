@@ -9,16 +9,31 @@ import uuid
 app = Flask(__name__)
 app.secret_key = 'your-secret-key-12345'
 
-# Database Setup
+# Database Setup - Using SQLite (Render will create it)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///engg_adda.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['UPLOAD_FOLDER'] = 'uploads'
-app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024 # 16 MB max size
+
+# Upload folder - Render's temporary storage
+UPLOAD_FOLDER = '/tmp/uploads' if os.environ.get('RENDER') else 'uploads'
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16 MB max size
+
+# Create uploads folder
+if not os.path.exists(app.config['UPLOAD_FOLDER']):
+    os.makedirs(app.config['UPLOAD_FOLDER'])
 
 db = SQLAlchemy(app)
 bcrypt = Bcrypt(app)
 
-CORS(app, supports_credentials=True, origins=["http://localhost:5500", "http://127.0.0.1:5500"])
+# CORS configuration - Allow both local and production
+CORS(app, supports_credentials=True, origins=[
+    "http://localhost:5500",
+    "http://127.0.0.1:5500",
+    "http://localhost:5001",
+    "https://engg-adda.vercel.app",
+    "https://engg-adda-git-main.vercel.app",
+    "https://engg-adda.vercel.app"
+])
 
 ALLOWED_EXTENSIONS = {'pdf', 'doc', 'docx', 'zip', 'rar', 'txt', 'ppt', 'pptx', 'xls', 'xlsx', 'ods', 'csv', 'jpg', 'png'}
 
@@ -41,13 +56,13 @@ class User(db.Model):
 
 class Resource(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    category = db.Column(db.String(50)) # 'study' or 'project'
+    category = db.Column(db.String(50))  # 'study' or 'project'
     title = db.Column(db.String(200), nullable=False)
-    description = db.Column(db.Text)    # Added Description Field!
+    description = db.Column(db.Text)
     branch = db.Column(db.String(100))  
     semester = db.Column(db.String(50)) 
     year = db.Column(db.String(50))     
-    subject = db.Column(db.String(200)) # Stores 'Major/Minor' for projects, or 'DBMS' for study
+    subject = db.Column(db.String(200))
     
     filename = db.Column(db.String(200), nullable=False)
     original_filename = db.Column(db.String(200), nullable=False)
@@ -56,12 +71,16 @@ class Resource(db.Model):
     uploaded_at = db.Column(db.DateTime, default=datetime.utcnow)
     downloads = db.Column(db.Integer, default=0)
 
+# ===== CREATE TABLES =====
 with app.app_context():
     db.create_all()
-    if not os.path.exists('uploads'):
-        os.makedirs('uploads')
 
 # ===== ROUTES =====
+
+@app.route('/')
+def home():
+    return jsonify({'message': 'Engg Adda Backend running!'})
+
 @app.route('/api/signup', methods=['POST'])
 def signup():
     data = request.get_json()
@@ -124,7 +143,7 @@ def upload():
     original = file.filename
     ext = original.rsplit('.', 1)[1].lower()
     new_name = f"{uuid.uuid4().hex}.{ext}"
-    path = os.path.join('uploads', new_name)
+    path = os.path.join(app.config['UPLOAD_FOLDER'], new_name)
     file.save(path)
     
     new_resource = Resource(
@@ -143,10 +162,14 @@ def get_resources():
     query = Resource.query
     
     # Apply filters if provided in URL
-    if request.args.get('category'): query = query.filter_by(category=request.args.get('category'))
-    if request.args.get('branch'): query = query.filter_by(branch=request.args.get('branch'))
-    if request.args.get('subject'): query = query.filter_by(subject=request.args.get('subject'))
-    if request.args.get('uploaded_by'): query = query.filter_by(uploaded_by=request.args.get('uploaded_by'))
+    if request.args.get('category'):
+        query = query.filter_by(category=request.args.get('category'))
+    if request.args.get('branch'):
+        query = query.filter_by(branch=request.args.get('branch'))
+    if request.args.get('subject'):
+        query = query.filter_by(subject=request.args.get('subject'))
+    if request.args.get('uploaded_by'):
+        query = query.filter_by(uploaded_by=request.args.get('uploaded_by'))
         
     resources = query.order_by(Resource.uploaded_at.desc()).all()
     return jsonify({
@@ -169,15 +192,21 @@ def download(rid):
 
 @app.route('/api/resources/<int:rid>', methods=['DELETE'])
 def delete(rid):
-    if 'username' not in session: return jsonify({'error': 'Login first'}), 401
+    if 'username' not in session:
+        return jsonify({'error': 'Login first'}), 401
     resource = Resource.query.get(rid)
-    if not resource: return jsonify({'error': 'Not found'}), 404
-    if resource.uploaded_by != session['username']: return jsonify({'error': 'Unauthorized'}), 403
+    if not resource:
+        return jsonify({'error': 'Not found'}), 404
+    if resource.uploaded_by != session['username']:
+        return jsonify({'error': 'Unauthorized'}), 403
 
-    if os.path.exists(resource.filepath): os.remove(resource.filepath)
+    if os.path.exists(resource.filepath):
+        os.remove(resource.filepath)
     db.session.delete(resource)
     db.session.commit()
     return jsonify({'message': 'Deleted!'})
 
+# ===== RUN SERVER =====
 if __name__ == '__main__':
-    app.run(debug=True, port=5001)
+    port = int(os.environ.get('PORT', 5001))
+    app.run(debug=False, host='0.0.0.0', port=port)
