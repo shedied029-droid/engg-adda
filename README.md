@@ -5,3 +5,11 @@ if you want to see it work, take the front end and back end code, throw it in vs
 i know exactly why you're looking at this repo. you're stressing over a b.tech minor project deadline and just need to show your panel something that actually runs.
 
 so here it is. grab the code, spin it up locally, pass your eval, and f*ck off. don't open any pull requests, don't ask me how the routing works, and don't expect tech support. just take it and go.
+
+
+
+
+
+for those suckers who dont know what req needed just paste thsi in vs code terminal 
+
+pip install Flask flask-cors flask-sqlalchemy flask-bcrypt
