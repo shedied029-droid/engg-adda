@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ENGG ADDA | Student Hub</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        /* ===== MODERN SOFT UI VARIABLES ===== */
+        :root {
+            --primary: #6c5ce7; --primary-light: #a29bfe; --secondary: #00cec9;
+            --accent: #fd79a8; --bg-color: #f4f7f6; --card-bg: #ffffff;
+            --text-dark: #2d3436; --text-muted: #636e72; --fire-color: #ff7675;
+            --shadow-soft: 0 15px 35px rgba(108, 92, 231, 0.08);
+            --shadow-hover: 0 20px 40px rgba(108, 92, 231, 0.15);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        body { background-color: var(--bg-color); color: var(--text-dark); overflow-x: hidden; min-height: 100vh; display: flex; flex-direction: column; background-image: radial-gradient(at 0% 0%, rgba(108, 92, 231, 0.1) 0px, transparent 50%), radial-gradient(at 100% 100%, rgba(0, 206, 201, 0.1) 0px, transparent 50%); background-attachment: fixed; }
+        .hidden { display: none !important; }
+
+        /* ===== TOP NAVIGATION ===== */
+        .top-nav { position: fixed; top: 0; left: 0; width: 100%; padding: 20px 5%; display: flex; justify-content: space-between; align-items: center; z-index: 1000; backdrop-filter: blur(10px); background: rgba(244, 247, 246, 0.8); }
+        .brand-logo { font-size: 1.5rem; font-weight: 800; color: var(--primary); letter-spacing: 1px; display: flex; align-items: center; gap: 8px; }
+        .brand-logo i { color: var(--secondary); }
+        .nav-actions { display: flex; gap: 15px; align-items: center; }
+        .nav-btn { background: var(--card-bg); padding: 10px 25px; border-radius: 50px; color: var(--primary); font-weight: 600; font-size: 0.95rem; box-shadow: var(--shadow-soft); cursor: pointer; border: 2px solid transparent; transition: 0.3s; }
+        .nav-btn:hover { border-color: var(--primary); transform: translateY(-2px); }
+        .nav-btn.primary { background: var(--primary); color: white; }
+        .nav-btn.primary:hover { background: var(--primary-light); border-color: transparent; box-shadow: var(--shadow-hover); }
+        .profile-icon-btn { width: 50px; height: 50px; border-radius: 50%; border: 3px solid var(--primary); background-color: #ffeaa7; background-size: cover; background-position: center; cursor: pointer; box-shadow: var(--shadow-soft); transition: 0.3s; }
+        .profile-icon-btn:hover { transform: scale(1.1) rotate(5deg); }
+
+        /* ===== MAIN APP CONTAINER & VIEWS ===== */
+        .app-container { flex: 1; display: flex; justify-content: center; align-items: center; width: 100%; max-width: 1200px; margin: 0 auto; padding: 120px 20px 60px; z-index: 10; }
+        .view-section { width: 100%; animation: fadeUp 0.5s ease forwards; text-align: center; }
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        .hero-title { font-size: 3rem; font-weight: 800; color: var(--text-dark); margin-bottom: 20px; line-height: 1.3; }
+        .hero-subtitle { font-size: 1.1rem; color: var(--text-muted); margin-bottom: 50px; font-weight: 500; }
+        .giant-links { display: flex; justify-content: center; gap: 30px; flex-wrap: wrap; }
+        .giant-card { background: var(--card-bg); border-radius: 30px; padding: 50px 30px; width: 100%; max-width: 350px; box-shadow: var(--shadow-soft); cursor: pointer; transition: 0.4s; position: relative; overflow: hidden; }
+        .giant-card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 5px; }
+        .card-study::before { background: linear-gradient(90deg, #feca57, #ff9f43); }
+        .card-project::before { background: linear-gradient(90deg, var(--secondary), var(--primary)); }
+        .giant-card:hover { transform: translateY(-10px); box-shadow: var(--shadow-hover); }
+        .giant-card i { font-size: 4rem; margin-bottom: 20px; }
+        .card-study i { color: #ff9f43; }
+        .card-project i { color: var(--primary); }
+        .giant-card h2 { font-size: 1.8rem; font-weight: 700; margin-bottom: 10px; }
+        .giant-card p { color: var(--text-muted); font-size: 0.95rem; }
+        .back-btn { display: inline-flex; align-items: center; gap: 8px; background: white; border: none; padding: 10px 20px; border-radius: 50px; font-weight: 600; color: var(--text-muted); box-shadow: 0 4px 10px rgba(0,0,0,0.05); cursor: pointer; transition: 0.3s; margin-bottom: 30px; }
+        .back-btn:hover { color: var(--primary); transform: translateX(-5px); }
+
+        /* ===== FORMS & INPUTS ===== */
+        .form-container { background: var(--card-bg); max-width: 550px; margin: 0 auto; padding: 40px; border-radius: 24px; box-shadow: var(--shadow-soft); text-align: left; }
+        .form-group { margin-bottom: 25px; }
+        .form-group label { display: block; font-size: 0.85rem; font-weight: 600; color: var(--text-muted); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; }
+        input, select { width: 100%; padding: 16px; border-radius: 16px; border: 2px solid #edf2f7; background: #f8fafc; color: var(--text-dark); font-size: 1rem; outline: none; transition: 0.3s; font-weight: 500; }
+        input:focus, select:focus { border-color: var(--primary-light); background: white; box-shadow: 0 0 0 4px rgba(108, 92, 231, 0.1); }
+        .file-drop { border: 2px dashed #cbd5e1; padding: 40px; text-align: center; cursor: pointer; transition: 0.3s; border-radius: 16px; background: #f8fafc; }
+        .file-drop i { font-size: 2.5rem; color: var(--primary-light); margin-bottom: 15px; }
+        .file-drop:hover { border-color: var(--primary); background: rgba(108, 92, 231, 0.05); }
+        .btn-action { background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; border: none; padding: 16px 40px; font-size: 1.1rem; font-weight: 700; border-radius: 16px; cursor: pointer; transition: 0.3s; width: 100%; margin-top: 10px; box-shadow: 0 10px 20px rgba(108, 92, 231, 0.2); }
+        .btn-action:hover { transform: translateY(-3px); box-shadow: var(--shadow-hover); }
+
+        /* ===== MODALS & PROFILE ===== */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(45, 52, 54, 0.6); backdrop-filter: blur(5px); z-index: 2000; display: flex; justify-content: center; align-items: center; padding: 20px; }
+        .modal-content { background: var(--card-bg); border-radius: 24px; padding: 40px; width: 100%; max-width: 500px; position: relative; max-height: 90vh; overflow-y: auto; text-align: center; box-shadow: 0 25px 50px rgba(0,0,0,0.1); animation: fadeUp 0.4s ease; }
+        .close-modal { position: absolute; top: 20px; right: 25px; font-size: 1.5rem; width: 40px; height: 40px; background: #f1f2f6; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text-dark); border: none; transition: 0.3s; }
+        .close-modal:hover { background: var(--text-dark); color: white; transform: rotate(90deg); }
+        .profile-section { padding-bottom: 25px; margin-bottom: 25px; border-bottom: 2px dashed #edf2f7; text-align: center; }
+        .profile-pic-container { width: 120px; height: 120px; margin: 0 auto 15px; border-radius: 50%; background-color: #ffeaa7; border: 4px solid var(--card-bg); box-shadow: var(--shadow-soft); position: relative; overflow: hidden; background-size: cover; background-position: center; }
+        .btn-icon { width: 35px; height: 35px; border-radius: 10px; border: none; font-size: 0.9rem; display: flex; justify-content: center; align-items: center; cursor: pointer; transition: 0.3s; }
+        .btn-delete { background: rgba(255, 118, 117, 0.1); color: var(--fire-color); }
+        .btn-delete:hover { background: var(--fire-color); color: white; }
+        .burning { animation: burnAway 0.8s forwards; pointer-events: none; }
+        @keyframes burnAway { 0% { filter: brightness(1); transform: scale(1); opacity: 1; } 30% { filter: brightness(1.2) sepia(1) hue-rotate(-30deg) saturate(3); transform: scale(1.05); background: rgba(255, 118, 117, 0.2); } 100% { filter: brightness(0) blur(10px); transform: scale(0.8) translateY(-20px); opacity: 0; } }
+        
+        .result-card { background: #f8fafc; border-radius: 16px; border: 1px solid #e2e8f0; padding: 15px 20px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; text-align: left; }
+    </style>
+</head>
+<body>
+
+    <!-- Top Navigation -->
+    <div class="top-nav">
+        <div class="brand-logo"><i class="fas fa-bolt"></i> Engg Adda</div>
+        <div class="nav-actions" id="auth-buttons">
+            <button class="nav-btn" onclick="openAuthModal('Login')">Login</button>
+            <button class="nav-btn primary" onclick="openAuthModal('Register')">Register</button>
+        </div>
+        <div class="nav-actions hidden" id="profile-action">
+            <button class="profile-icon-btn" id="navProfileIcon" onclick="openModal('profileModal')"></button>
+        </div>
+    </div>
+
+    <!-- AUTH MODAL -->
+    <div id="authModal" class="modal-overlay hidden">
+        <div class="modal-content" style="max-width: 450px;">
+            <button class="close-modal" onclick="closeModal('authModal')"><i class="fas fa-times"></i></button>
+            <h2 style="font-size: 1.8rem; margin-bottom: 30px; font-weight: 800; color: var(--text-dark);" id="authTitle">Welcome Back</h2>
+            <div style="text-align: left;">
+                <div class="form-group"><label>Username</label><input type="text" id="authUsername" placeholder="e.g. engineering_sucks_123"></div>
+                <div class="form-group"><label>Password</label><input type="password" id="authPassword" placeholder="••••••••"></div>
+                <button class="btn-action" id="authSubmitBtn" onclick="handleAuth()">Continue</button>
+                <div id="authMsg" style="text-align:center; margin-top:10px; font-weight:bold;"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PROFILE MODAL -->
+    <div id="profileModal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <button class="close-modal" onclick="closeModal('profileModal')"><i class="fas fa-times"></i></button>
+            <div class="profile-section">
+                <div class="profile-pic-container" id="profilePicDisplay"></div>
+                <div style="display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 20px;">
+                    <h2 id="displayProfileName" style="font-weight: 800; font-size: 1.5rem; color: var(--text-dark);">engineering_sucks_123</h2>
+                </div>
+            </div>
+            <div class="profile-section">
+                <h3 style="font-size: 1.2rem; font-weight: 700; color: var(--text-dark); margin-bottom: 10px;">
+                    Total Uploads: <span id="totalProjectCount" style="color: var(--primary); font-size: 1.5rem;">0</span>
+                </h3>
+                <button class="nav-btn primary" style="width: 100%; padding: 12px;" onclick="viewMyProjects()">View All Posted Resources</button>
+            </div>
+            <div class="profile-section" style="border: none;">
+                <button class="btn-action" style="background: #ffeaa7; color: #d35400; box-shadow:none;" onclick="handleLogout()">Log Out</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN APP CONTAINER -->
+    <div class="app-container">
+        
+        <!-- ===== LANDING PAGE ===== -->
+        <div id="view-landing" class="view-section">
+            <h1 class="hero-title"><span id="typewriterText"></span><span class="typing-cursor">|</span></h1>
+            <p class="hero-subtitle">The ultimate resource hub for engineering students.</p>
+            <div class="giant-links">
+                <div class="giant-card card-study" onclick="navigate('study-details')"><i class="fas fa-book-open"></i><h2>Study Materials</h2><p>Access notes and PDFs</p></div>
+                <div class="giant-card card-project" onclick="navigate('project-action')"><i class="fas fa-code-branch"></i><h2>Project Hub</h2><p>Find & share source codes.</p></div>
+            </div>
+        </div>
+
+        <!-- ===== MY UPLOADS VIEW ===== -->
+        <div id="view-my-projects" class="view-section hidden">
+            <button class="back-btn" onclick="openModal('profileModal'); navigate('landing')"><i class="fas fa-arrow-left"></i> Back to Profile</button>
+            <div class="form-container" style="max-width: 650px;">
+                <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 25px;">My Uploads</h2>
+                <div id="extended-projects-list">Loading...</div>
+            </div>
+        </div>
+
+        <!-- ===== PROJECT FLOW ===== -->
+        <div id="view-project-action" class="view-section hidden">
+            <button class="back-btn" onclick="goHome()"><i class="fas fa-arrow-left"></i> Home</button>
+            <h1 class="hero-title">Project Hub</h1>
+            <div class="giant-links">
+                <div class="giant-card" style="max-width: 300px;" onclick="navigate('project-upload')"><i class="fas fa-cloud-upload-alt" style="color: var(--secondary);"></i><h2>Donate Code</h2></div>
+                <div class="giant-card" style="max-width: 300px;" onclick="navigate('project-download')"><i class="fas fa-search" style="color: var(--primary);"></i><h2>Find Code</h2></div>
+            </div>
+        </div>
+
+        <!-- Upload Project -->
+        <div id="view-project-upload" class="view-section hidden">
+            <button class="back-btn" onclick="navigate('project-action')"><i class="fas fa-arrow-left"></i> Back</button>
+            <div class="form-container">
+                <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 30px;">Upload Project</h2>
+                <div class="form-group"><label>Project Name</label><input type="text" id="pUpName" placeholder="e.g. Smart Traffic AI"></div>
+                <div class="form-group"><label>Branch</label><select id="pUpBranch"><option value="Computer Science">Computer Science</option><option value="Information Technology">Information Technology</option><option value="Mechanical">Mechanical</option><option value="Civil">Civil</option><option value="Electrical">Electrical</option></select></div>
+                <div class="form-group"><label>Project Type</label><select id="pUpType"><option>Minor Project</option><option>Major Project</option></select></div>
+                <div class="form-group"><label>Description</label><input type="text" id="pUpDesc" placeholder="Tech stack used..."></div>
+                <div class="file-drop" onclick="document.getElementById('p-file').click()">
+                    <i class="fas fa-folder-open"></i><p id="p-file-display" style="font-weight: 600;">Click to select ZIP or PDF</p>
+                    <input type="file" id="p-file" class="hidden" onchange="document.getElementById('p-file-display').innerText = this.files[0].name">
+                </div>
+                <button class="btn-action" onclick="submitUpload('project')">Submit Project</button>
+                <div id="pUpMsg" style="text-align:center; margin-top:10px;"></div>
+            </div>
+        </div>
+
+        <!-- Download Project -->
+        <div id="view-project-download" class="view-section hidden">
+            <button class="back-btn" onclick="navigate('project-action')"><i class="fas fa-arrow-left"></i> Back</button>
+            <div class="form-container">
+                <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 30px;">Find Projects</h2>
+                <div class="form-group"><label>Branch</label><select id="pDownBranch"><option value="Computer Science">Computer Science</option><option value="Information Technology">Information Technology</option><option value="Mechanical">Mechanical</option><option value="Civil">Civil</option><option value="Electrical">Electrical</option></select></div>
+                <div class="form-group"><label>Project Type</label><select id="pDownType"><option>Minor Project</option><option>Major Project</option></select></div>
+                <button class="btn-action" onclick="fetchResources('project')">Search Repository</button>
+                <div id="proj-results" style="margin-top: 30px;"></div>
+            </div>
+        </div>
+
+        <!-- ===== STUDY FLOW ===== -->
+        <div id="view-study-details" class="view-section hidden">
+            <button class="back-btn" onclick="goHome()"><i class="fas fa-arrow-left"></i> Home</button>
+            <div class="form-container">
+                <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 30px;">Select Module</h2>
+                <div class="form-group"><label>Branch</label><select id="sBranch" onchange="updateSubjects()"><option value="Computer Science">Computer Science</option><option value="Information Technology">Information Technology</option><option value="Mechanical">Mechanical</option><option value="Civil">Civil</option><option value="Electrical">Electrical</option></select></div>
+                <div style="display:flex; gap:15px;">
+                    <div class="form-group" style="flex:1;"><label>Year</label><select id="sYear" onchange="updateSemesters()"><option value="1st Yr">1st Yr</option><option value="2nd Yr">2nd Yr</option><option value="3rd Yr">3rd Yr</option><option value="4th Yr">4th Yr</option></select></div>
+                    <div class="form-group" style="flex:1;"><label>Semester</label><select id="sSem" onchange="updateSubjects()"></select></div>
+                </div>
+                <div class="form-group"><label>Subject</label><select id="sSubject"></select></div>
+                <button class="btn-action" onclick="navigate('study-action')">Proceed</button>
+            </div>
+        </div>
+
+        <div id="view-study-action" class="view-section hidden">
+            <button class="back-btn" onclick="navigate('study-details')"><i class="fas fa-arrow-left"></i> Back</button>
+            <h1 class="hero-title">Intent?</h1>
+            <div class="giant-links">
+                <div class="giant-card" style="max-width: 300px;" onclick="navigate('study-upload')"><i class="fas fa-upload" style="color: var(--accent);"></i><h2>Upload Notes</h2></div>
+                <div class="giant-card" style="max-width: 300px;" onclick="navigate('study-view')"><i class="fas fa-book-reader" style="color: var(--primary);"></i><h2>Start Studying</h2></div>
+            </div>
+        </div>
+
+        <div id="view-study-upload" class="view-section hidden">
+            <button class="back-btn" onclick="navigate('study-action')"><i class="fas fa-arrow-left"></i> Back</button>
+            <div class="form-container">
+                <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 30px;">Upload Notes</h2>
+                <div class="file-drop" onclick="document.getElementById('s-file').click()">
+                    <i class="fas fa-file-pdf" style="color: var(--accent);"></i><p id="s-file-display" style="font-weight: 600;">Click to select PDF Notes</p>
+                    <input type="file" id="s-file" class="hidden" onchange="document.getElementById('s-file-display').innerText = this.files[0].name">
+                </div>
+                <button class="btn-action" onclick="submitUpload('study')">Submit Notes</button>
+                <div id="sUpMsg" style="text-align:center; margin-top:10px;"></div>
+            </div>
+        </div>
+
+        <div id="view-study-view" class="view-section hidden">
+            <button class="back-btn" onclick="navigate('study-action')"><i class="fas fa-arrow-left"></i> Back</button>
+            <h1 class="hero-title" style="margin-bottom: 30px;">Resources</h1>
+            <button class="btn-action" onclick="fetchResources('study')" style="max-width: 300px; margin:0 auto 30px;">Load Notes for Subject</button>
+            <div id="study-results" class="form-container" style="background: transparent; box-shadow: none; padding: 0;"></div>
+        </div>
+    </div>
+
+    <!-- ===== LOGIC WITH REAL API INTEGRATION ===== -->
+    <script>
+        const API = 'http://localhost:5001';
+        let currentUser = null;
+
+        // 1. UI & THEME LOGIC
+        const titleText = "Bhaiyo aur behno, welcome to Engg Adda.";
+        let titleIdx = 0;
+        function typeWriter() {
+            if (titleIdx < titleText.length) {
+                document.getElementById("typewriterText").innerHTML += titleText.charAt(titleIdx);
+                titleIdx++;
+                setTimeout(typeWriter, 80); 
+            }
+        }
+
+        function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
+        function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+        
+        function navigate(targetView) {
+            ['landing', 'project-action', 'project-upload', 'project-download', 'study-details', 'study-action', 'study-upload', 'study-view', 'my-projects'].forEach(v => document.getElementById(`view-${v}`).classList.add('hidden'));
+            document.getElementById(`view-${targetView}`).classList.remove('hidden');
+        }
+        function goHome() { navigate('landing'); document.getElementById('proj-results').innerHTML = ''; document.getElementById('study-results').innerHTML = ''; }
+
+        // 2. RGPV CURRICULUM DATA
+        const curriculum = {
+            "1st Sem": ["Engineering Chemistry", "Mathematics-I", "English for Comm.", "Basic EE", "Graphics"],
+            "2nd Sem": ["Engineering Physics", "Mathematics-II", "Basic Mech.", "Basic Civil", "Basic CS"],
+            "3rd Sem": {"Computer Science": ["Data Structures", "Discrete Structure", "Digital Circuits"], "Information Technology": ["Data Structures", "Discrete Structure"], "Mechanical": ["Thermodynamics", "Strength of Materials"], "Civil": ["Surveying", "Building Materials"], "Electrical": ["Network Analysis", "Analog Electronics"]},
+            "4th Sem": {"Computer Science": ["Algorithms", "Architecture", "DBMS", "OS"], "Information Technology": ["Algorithms", "Architecture", "DBMS", "OS"], "Mechanical": ["Fluid Mechanics", "Machine Design-I"], "Civil": ["Structural Analysis-I", "Transportation"], "Electrical": ["Control Systems", "Power System-I"]},
+            "5th Sem": {"Computer Science": ["Theory of Computation", "Computer Networks"], "Information Technology": ["Theory of Computation", "Cyber Security"], "Mechanical": ["IC Engines", "Dynamics of Machines"], "Civil": ["Structural Analysis-II", "Geotechnical"], "Electrical": ["Microprocessors", "Power Electronics"]},
+            "6th Sem": {"Computer Science": ["Software Engineering", "Compiler Design", "Machine Learning"], "Information Technology": ["Software Engineering", "Web Technology"], "Mechanical": ["CAD/CAM", "Mechatronics"], "Civil": ["Steel Structures", "Environmental Engg"], "Electrical": ["Digital Signal Processing", "Renewable Energy"]},
+            "7th Sem": {"Computer Science": ["Cloud Computing", "IoT"], "Information Technology": ["Cloud Computing", "Data Science"], "Mechanical": ["Automobile Engineering", "Robotics"], "Civil": ["RCC Structures", "Advanced Structural Design"], "Electrical": ["Smart Grid", "High Voltage Engg"]},
+            "8th Sem": {"Computer Science": ["Soft Computing", "Data Mining"], "Information Technology": ["Block Chain", "Information Security"], "Mechanical": ["Quality Management", "Energy Conservation"], "Civil": ["Construction Management", "Earthquake Design"], "Electrical": ["Power Quality", "FACTS Devices"]}
+        };
+
+        function updateSemesters() {
+            const year = document.getElementById('sYear').value;
+            const semSelect = document.getElementById('sSem');
+            semSelect.innerHTML = ''; 
+            let sems = (year === "1st Yr") ? ["1st Sem", "2nd Sem"] : (year === "2nd Yr") ? ["3rd Sem", "4th Sem"] : (year === "3rd Yr") ? ["5th Sem", "6th Sem"] : ["7th Sem", "8th Sem"];
+            sems.forEach(s => { let opt = document.createElement('option'); opt.value = s; opt.innerHTML = s; semSelect.appendChild(opt); });
+            updateSubjects();
+        }
+
+        function updateSubjects() {
+            const branch = document.getElementById('sBranch').value;
+            const sem = document.getElementById('sSem').value;
+            const subDrop = document.getElementById('sSubject');
+            subDrop.innerHTML = ''; 
+            let subs = (sem === "1st Sem" || sem === "2nd Sem") ? curriculum[sem] : (curriculum[sem][branch] || ["General"]);
+            subs.forEach(s => { let opt = document.createElement('option'); opt.value = s; opt.innerHTML = s; subDrop.appendChild(opt); });
+        }
+
+        // 3. REAL API: AUTHENTICATION
+        function openAuthModal(title) {
+            document.getElementById('authTitle').innerText = title;
+            document.getElementById('authSubmitBtn').innerText = title;
+            openModal('authModal');
+        }
+
+        async function handleAuth() {
+            const action = document.getElementById('authSubmitBtn').innerText;
+            const u = document.getElementById('authUsername').value.trim() || "engineering_sucks_123";
+            const p = document.getElementById('authPassword').value || "123456";
+            const endpoint = action === 'Login' ? '/api/login' : '/api/signup';
+            
+            try {
+                const res = await fetch(API + endpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' }, credentials: 'include', body: JSON.stringify({ username: u, password: p, email: u+"@test.com" }) });
+                const data = await res.json();
+                if(res.ok) {
+                    if(action === 'Register') { alert('Registered! Now logging in...'); handleAuthFallback('Login', u); }
+                    else { updateUIForLogin(u); closeModal('authModal'); }
+                } else { document.getElementById('authMsg').innerText = data.error; document.getElementById('authMsg').style.color = 'red'; }
+            } catch (err) { alert('Server not running on port 5001!'); }
+        }
+
+        // Fake auth if server fails for UI testing
+        function handleAuthFallback(action, user) { updateUIForLogin(user); closeModal('authModal'); }
+
+        function updateUIForLogin(user) {
+            currentUser = user;
+            document.getElementById('displayProfileName').innerText = user;
+            document.getElementById('auth-buttons').classList.add('hidden');
+            document.getElementById('profile-action').classList.remove('hidden');
+            const avatarUrl = `url(https://api.dicebear.com/7.x/adventurer/svg?seed=${user}&backgroundColor=b6e3f4,c0aede,d1d4f9)`;
+            document.getElementById('profilePicDisplay').style.backgroundImage = avatarUrl;
+            document.getElementById('navProfileIcon').style.backgroundImage = avatarUrl;
+        }
+
+        async function handleLogout() {
+            await fetch(API + '/api/logout', { method: 'POST', credentials: 'include' });
+            currentUser = null;
+            document.getElementById('auth-buttons').classList.remove('hidden');
+            document.getElementById('profile-action').classList.add('hidden');
+            closeModal('profileModal'); goHome();
+        }
+
+        // 4. REAL API: FILE UPLOAD
+        async function submitUpload(category) {
+            const fileInput = document.getElementById(category === 'project' ? 'p-file' : 's-file');
+            if(!fileInput.files[0]) return alert("Please select a file!");
+
+            const fd = new FormData();
+            fd.append('file', fileInput.files[0]);
+            fd.append('category', category);
+
+            if(category === 'project') {
+                fd.append('title', document.getElementById('pUpName').value || 'New Project');
+                fd.append('description', document.getElementById('pUpDesc').value);
+                fd.append('branch', document.getElementById('pUpBranch').value);
+                fd.append('subject', document.getElementById('pUpType').value); // Save Major/Minor here
+            } else {
+                fd.append('title', document.getElementById('sSubject').value + ' Notes');
+                fd.append('branch', document.getElementById('sBranch').value);
+                fd.append('year', document.getElementById('sYear').value);
+                fd.append('semester', document.getElementById('sSem').value);
+                fd.append('subject', document.getElementById('sSubject').value);
+            }
+
+            try {
+                const res = await fetch(API + '/api/upload', { method: 'POST', credentials: 'include', body: fd });
+                if(res.ok) { alert("Upload Successful!"); goHome(); }
+                else { const d = await res.json(); alert(d.error); }
+            } catch(e) { alert("Server error. Check if backend is running."); }
+        }
+
+        // 5. REAL API: FETCH & DISPLAY
+        async function fetchResources(category) {
+            const resDiv = document.getElementById(category === 'project' ? 'proj-results' : 'study-results');
+            resDiv.innerHTML = 'Loading...';
+            
+            let url = API + `/api/resources?category=${category}`;
+            if(category === 'project') {
+                url += `&branch=${document.getElementById('pDownBranch').value}&subject=${document.getElementById('pDownType').value}`;
+            } else {
+                url += `&branch=${document.getElementById('sBranch').value}&subject=${document.getElementById('sSubject').value}`;
+            }
+
+            try {
+                const res = await fetch(url);
+                const data = await res.json();
+                if(!data.resources || data.resources.length === 0) {
+                    resDiv.innerHTML = '<p>No resources found for this selection.</p>'; return;
+                }
+                resDiv.innerHTML = data.resources.map(r => `
+                    <div class="result-card">
+                        <div><h4 style="color:var(--text-dark);">${r.title}</h4><p style="font-size:0.8rem; color:var(--text-muted);">By ${r.uploaded_by} • ${r.filename}</p></div>
+                        <button class="nav-btn primary" onclick="window.open('${API}/api/download/${r.id}', '_blank')">Download</button>
+                    </div>`).join('');
+            } catch(e) { resDiv.innerHTML = '<p style="color:red;">Error connecting to server.</p>'; }
+        }
+
+        // 6. REAL API: MY PROFILE PROJECTS
+        async function viewMyProjects() {
+            if(!currentUser) return alert("Please login first.");
+            closeModal('profileModal'); navigate('my-projects');
+            const list = document.getElementById('extended-projects-list');
+            list.innerHTML = 'Loading your uploads...';
+
+            try {
+                const res = await fetch(API + `/api/resources?uploaded_by=${currentUser}`);
+                const data = await res.json();
+                document.getElementById('totalProjectCount').innerText = data.resources.length;
+                if(data.resources.length === 0) { list.innerHTML = '<p>No uploads yet.</p>'; return; }
+
+                list.innerHTML = data.resources.map(r => `
+                    <div class="result-card" id="card-${r.id}">
+                        <div><h4 style="color:var(--text-dark);">${r.title}</h4><p style="font-size:0.8rem;">${r.subject} • ${r.category.toUpperCase()}</p></div>
+                        <button class="btn-icon btn-delete" onclick="deleteResource(${r.id})"><i class="fas fa-fire"></i></button>
+                    </div>`).join('');
+            } catch(e) {}
+        }
+
+        async function deleteResource(id) {
+            if(!confirm("Burn this file permanently?")) return;
+            document.getElementById(`card-${id}`).classList.add('burning');
+            await fetch(API + `/api/resources/${id}`, { method: 'DELETE', credentials: 'include' });
+            setTimeout(viewMyProjects, 800);
+        }
+
+        window.onload = () => { typeWriter(); updateSemesters(); };
+    </script>
+</body>
+</html>
